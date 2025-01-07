@@ -15,7 +15,6 @@ temp_dir = "temp_signatures"
 os.makedirs(temp_dir, exist_ok=True)
 
 app = FastAPI()
-
 def verify_signature(original_signature_path, verification_signature_path):
     # Load and preprocess original signature
     original_signature = cv2.imread(original_signature_path)
@@ -29,12 +28,15 @@ def verify_signature(original_signature_path, verification_signature_path):
     original_signature = np.expand_dims(original_signature, axis=0)
     verification_signature = np.expand_dims(verification_signature, axis=0)
 
-    # Predict using the model
-    prediction = model.predict([original_signature, verification_signature])
-    
-    # Determine result
-    result = "Genuine" if prediction[0][0] < 0.5 else "Forged"
+    # Predict using the model for original vs verification
+    prediction_original_vs_verification = model.predict([original_signature, verification_signature])
+    # Predict using the model for verification vs original
+    prediction_verification_vs_original = model.predict([verification_signature, original_signature])
+
+    # Determine results
+    result = "Genuine" if (prediction_original_vs_verification[0][0] < 0.5 and prediction_verification_vs_original[0][0] < 0.5) else "Forged"
     return result
+
 @app.post("/verify-signature/")
 async def verify_signature_endpoint(original_signature: UploadFile = File(...), verification_signature: UploadFile = File(...)):
     # Create dynamic file paths based on upload

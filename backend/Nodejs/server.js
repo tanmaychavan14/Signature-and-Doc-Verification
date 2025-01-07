@@ -15,8 +15,8 @@ app.get("/", (req, res)=>{
 app.post('/verify-signature', async (req, res) => {
     try {
         // Define the paths to the pre-existing files in the 'uploads/' folder
-        const originalSignaturePath = path.join('uploads', 's.jpg'); // Original signature
-        const verificationSignaturePath = path.join('uploads', 'sign2.jpg'); // Verification signature
+        const originalSignaturePath = path.join('uploads', 'sign2.jpg'); // Original signature
+        const verificationSignaturePath = path.join('uploads', 'sign1.jpg'); // Verification signature
 
         // Check if the files exist
         if (!fs.existsSync(originalSignaturePath) || !fs.existsSync(verificationSignaturePath)) {
