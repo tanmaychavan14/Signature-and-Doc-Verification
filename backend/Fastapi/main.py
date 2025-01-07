@@ -35,12 +35,11 @@ def verify_signature(original_signature_path, verification_signature_path):
     # Determine result
     result = "Genuine" if prediction[0][0] < 0.5 else "Forged"
     return result
-
 @app.post("/verify-signature/")
 async def verify_signature_endpoint(original_signature: UploadFile = File(...), verification_signature: UploadFile = File(...)):
-    # Save the uploaded images temporarily
-    original_path = os.path.join(temp_dir, "original_signature.jpg")
-    verification_path = os.path.join(temp_dir, "verification_signature.jpg")
+    # Create dynamic file paths based on upload
+    original_path = os.path.join(temp_dir, original_signature.filename)
+    verification_path = os.path.join(temp_dir, verification_signature.filename)
 
     with open(original_path, "wb") as f:
         shutil.copyfileobj(original_signature.file, f)
@@ -51,6 +50,9 @@ async def verify_signature_endpoint(original_signature: UploadFile = File(...), 
     # Call the signature verification function
     result = verify_signature(original_path, verification_path)
 
+    # Cleanup temporary files
+    os.remove(original_path)
+    os.remove(verification_path)
+
     # Return the result
     return JSONResponse(content={"result": result})
-

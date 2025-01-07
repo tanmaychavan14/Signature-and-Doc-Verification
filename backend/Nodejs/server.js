@@ -7,23 +7,27 @@ const path = require('path');
 // Setup Express server
 const app = express();
 const port = 4000;
+
 app.get("/", (req, res)=>{
     res.send("server is listening")
 })
-
-// Endpoint to trigger signature verification
+// Endpoint to handle signature verification with pre-existing files in the uploads folder
 app.post('/verify-signature', async (req, res) => {
-    // Define paths to the pre-existing files in the 'uploads/' folder
-    const originalSignaturePath = path.join(__dirname, 'uploads', 'original_signature.jpg');
-    const verificationSignaturePath = path.join(__dirname, 'uploads', 'verification_signature.jpg');
-
-    // Check if both files exist
-    if (!fs.existsSync(originalSignaturePath) || !fs.existsSync(verificationSignaturePath)) {
-        return res.status(400).send('Both original and verification signature files must exist in the uploads folder');
-    }
-
     try {
-        // Create FormData object
+        // Define the paths to the pre-existing files in the 'uploads/' folder
+        const originalSignaturePath = path.join('uploads', 's.jpg'); // Original signature
+        const verificationSignaturePath = path.join('uploads', 'sign2.jpg'); // Verification signature
+
+        // Check if the files exist
+        if (!fs.existsSync(originalSignaturePath) || !fs.existsSync(verificationSignaturePath)) {
+            return res.status(400).json({ error: 'Both sign.jpg and sign2.jpg must be present in the uploads folder' });
+        }
+
+        // Log the paths for debugging purposes
+        console.log('Original Signature Path:', originalSignaturePath);
+        console.log('Verification Signature Path:', verificationSignaturePath);
+
+        // Create FormData object to send to FastAPI
         const form = new FormData();
         form.append('original_signature', fs.createReadStream(originalSignaturePath));
         form.append('verification_signature', fs.createReadStream(verificationSignaturePath));
