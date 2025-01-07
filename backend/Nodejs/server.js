@@ -7,6 +7,9 @@ const path = require('path');
 // Setup Express server
 const app = express();
 const port = 4000;
+app.get("/", (req, res)=>{
+    res.send("server is listening")
+})
 
 // Endpoint to trigger signature verification
 app.post('/verify-signature', async (req, res) => {
